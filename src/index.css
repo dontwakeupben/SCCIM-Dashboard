@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+/* Ensure full viewport coverage */
+html,
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#root {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Leaflet Map Styles */
+.leaflet-container {
+    font-family: inherit;
+}
+
+.custom-truck-marker {
+    background: transparent;
+    border: none;
+}
+
+.custom-truck-marker div {
+    transition: transform 0.2s ease;
+}
+
+.custom-truck-marker:hover div {
+    transform: scale(1.1);
+}
+
+.endpoint-marker {
+    background: transparent;
+    border: none;
+}
+
+/* Map popup styles */
+.leaflet-popup-content-wrapper {
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.leaflet-popup-content {
+    margin: 0;
+}
