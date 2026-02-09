@@ -15,6 +15,18 @@ import {
 import { exportToCSV } from '../utils/helpers';
 
 const ExportableChart = ({ title, data, type = "line", dataKey, color, unit, threshold, isLoading }) => {
+    // Sort data by time to ensure correct chronological order
+    const sortedData = React.useMemo(() => {
+        if (!data || data.length === 0) return [];
+        return [...data].sort((a, b) => {
+            // Parse time strings (format: "HH:MM")
+            const [aHours, aMinutes] = a.time.split(':').map(Number);
+            const [bHours, bMinutes] = b.time.split(':').map(Number);
+            const aTime = aHours * 60 + aMinutes;
+            const bTime = bHours * 60 + bMinutes;
+            return aTime - bTime;
+        });
+    }, [data]);
     if (isLoading) {
         return (
             <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 h-96 flex flex-col">
@@ -24,7 +36,7 @@ const ExportableChart = ({ title, data, type = "line", dataKey, color, unit, thr
         );
     }
 
-    if (!data || data.length === 0) {
+    if (!sortedData || sortedData.length === 0) {
         return (
             <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 h-96 flex flex-col">
                 <div className="flex justify-between items-center mb-6">
@@ -49,8 +61,8 @@ const ExportableChart = ({ title, data, type = "line", dataKey, color, unit, thr
             <div className="flex justify-between items-center mb-6">
                 <h3 className="font-semibold text-slate-800">{title}</h3>
                 <button
-                    onClick={() => exportToCSV(data, title.replace(' ', '_'))}
-                    disabled={!data || data.length === 0}
+                    onClick={() => exportToCSV(sortedData, title.replace(' ', '_'))}
+                    disabled={!sortedData || sortedData.length === 0}
                     className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors px-3 py-1.5 bg-blue-50 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <Download className="w-4 h-4" />
@@ -60,7 +72,7 @@ const ExportableChart = ({ title, data, type = "line", dataKey, color, unit, thr
             <div className="flex-1 w-full min-h-0">
                 <ResponsiveContainer width="100%" height="100%">
                     {type === "line" ? (
-                        <LineChart data={data}>
+                        <LineChart data={sortedData}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                             <XAxis
                                 dataKey="time"
@@ -86,7 +98,7 @@ const ExportableChart = ({ title, data, type = "line", dataKey, color, unit, thr
                             />
                         </LineChart>
                     ) : (
-                        <AreaChart data={data}>
+                        <AreaChart data={sortedData}>
                             <defs>
                                 <linearGradient id={`color${dataKey}`} x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor={color} stopOpacity={0.3} />
