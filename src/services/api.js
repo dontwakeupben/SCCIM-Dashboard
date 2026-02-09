@@ -25,9 +25,14 @@ export async function fetchFleet() {
  * GET /telemetry/{deviceId}?range={range}
  */
 export async function fetchTelemetry(deviceId, range = '24h') {
-    const url = `${API_BASE_URL}/telemetry/${deviceId}?range=${range}`;
+    // Add cache-busting timestamp to force fresh data
+    const cacheBuster = Date.now();
+    const url = `${API_BASE_URL}/telemetry/${deviceId}?range=${range}&_cb=${cacheBuster}`;
     try {
-        const response = await fetch(url, { mode: 'cors' });
+        const response = await fetch(url, {
+            mode: 'cors',
+            cache: 'no-store'  // Explicitly disable HTTP caching
+        });
         if (!response.ok) {
             if (response.status === 404) throw new Error('Device not registered');
             if (response.status === 500) throw new Error('Server error, retrying...');

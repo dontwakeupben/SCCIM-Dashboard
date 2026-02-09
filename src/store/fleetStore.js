@@ -233,6 +233,14 @@ export const useFleetStore = create((set, get) => ({
         });
     },
 
+    clearTelemetryCache: () => {
+        console.log('[DEBUG] Clearing telemetry cache');
+        set({
+            telemetryCache: new Map(),
+            alertsCache: new Map()
+        });
+    },
+
     restartTelemetryRefresh: () => {
         const { intervals, selectedDeviceId } = get();
         if (intervals.telemetry) {

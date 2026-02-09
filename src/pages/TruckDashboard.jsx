@@ -55,7 +55,8 @@ const TruckDashboard = () => {
         fetchSearchAlerts,
         setSelectedDevice,
         timeRange,
-        setTimeRange
+        setTimeRange,
+        clearTelemetryCache
     } = useFleetStore();
 
     // Local state
@@ -79,6 +80,13 @@ const TruckDashboard = () => {
         ]);
         setLastUpdated(new Date());
     }, [deviceId, fetchTelemetry, fetchSearchAlerts, timeRange]);
+
+    // Clear cache and reload function for debugging
+    const handleClearCache = useCallback(() => {
+        console.log('[DEBUG] Manual cache clear triggered');
+        clearTelemetryCache();
+        loadData();
+    }, [clearTelemetryCache, loadData]);
 
     // Initial load and when device/range changes
     useEffect(() => {
@@ -226,6 +234,14 @@ const TruckDashboard = () => {
                             <option value="24h">Last 24 Hours</option>
                             <option value="7d">Last 7 Days</option>
                         </select>
+                        {/* DEBUG: Clear cache button */}
+                        <button
+                            onClick={handleClearCache}
+                            className="ml-2 text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded hover:bg-orange-200 transition-colors"
+                            title="Clear cache and reload"
+                        >
+                            Clear Cache
+                        </button>
                     </div>
                 </div>
 

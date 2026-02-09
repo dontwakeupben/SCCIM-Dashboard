@@ -70,14 +70,22 @@ export function getRiskColor(risk) {
  */
 export function toChartData(history, threshold) {
     if (!history || history.length === 0) return [];
+    
+    // Sort by timestamp ascending (oldest first) to ensure correct order
+    const sortedHistory = [...history].sort((a, b) => {
+        const timeA = new Date(a.timestamp).getTime();
+        const timeB = new Date(b.timestamp).getTime();
+        return timeA - timeB;
+    });
+    
     // DEBUG: Log raw history before transformation to diagnose timestamp issues
     console.log('[DEBUG] toChartData - raw history first/last points:', {
-        totalPoints: history.length,
-        firstPoint: { timestamp: history[0]?.timestamp, temp: history[0]?.temperature },
-        secondPoint: { timestamp: history[1]?.timestamp, temp: history[1]?.temperature },
-        lastPoint: { timestamp: history[history.length - 1]?.timestamp, temp: history[history.length - 1]?.temperature }
+        totalPoints: sortedHistory.length,
+        firstPoint: { timestamp: sortedHistory[0]?.timestamp, temp: sortedHistory[0]?.temperature },
+        secondPoint: { timestamp: sortedHistory[1]?.timestamp, temp: sortedHistory[1]?.temperature },
+        lastPoint: { timestamp: sortedHistory[sortedHistory.length - 1]?.timestamp, temp: sortedHistory[sortedHistory.length - 1]?.temperature }
     });
-    const result = history.map(point => ({
+    const result = sortedHistory.map(point => ({
         time: formatTimestamp(point.timestamp),
         temperature: point.temperature,
         humidity: point.humidity,
