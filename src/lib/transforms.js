@@ -70,13 +70,28 @@ export function getRiskColor(risk) {
  */
 export function toChartData(history, threshold) {
     if (!history || history.length === 0) return [];
-    return history.map(point => ({
+    // DEBUG: Log raw history before transformation to diagnose timestamp issues
+    console.log('[DEBUG] toChartData - raw history first/last points:', {
+        totalPoints: history.length,
+        firstPoint: { timestamp: history[0]?.timestamp, temp: history[0]?.temperature },
+        secondPoint: { timestamp: history[1]?.timestamp, temp: history[1]?.temperature },
+        lastPoint: { timestamp: history[history.length - 1]?.timestamp, temp: history[history.length - 1]?.temperature }
+    });
+    const result = history.map(point => ({
         time: formatTimestamp(point.timestamp),
         temperature: point.temperature,
         humidity: point.humidity,
         speed: point.gps?.speed,
         threshold: threshold
     }));
+    // DEBUG: Log transformed chart data
+    console.log('[DEBUG] toChartData - transformed chart data first/last:', {
+        totalPoints: result.length,
+        firstPoint: result[0],
+        secondPoint: result[1],
+        lastPoint: result[result.length - 1]
+    });
+    return result;
 }
 
 /**

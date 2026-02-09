@@ -57,6 +57,21 @@ export const useFleetStore = create((set, get) => ({
         set({ isLoadingTelemetry: true, error: null });
         try {
             const data = await fetchTelemetry(deviceId, useRange);
+            // DEBUG: Log raw payload for 24h range to diagnose timestamp ordering issues
+            if (useRange === '24h' && data?.history) {
+                console.log('[DEBUG] fetchTelemetry payload for 24h range:', {
+                    deviceId,
+                    historyLength: data.history.length,
+                    firstFewPoints: data.history.slice(0, 5).map(p => ({
+                        timestamp: p.timestamp,
+                        temperature: p.temperature
+                    })),
+                    lastFewPoints: data.history.slice(-5).map(p => ({
+                        timestamp: p.timestamp,
+                        temperature: p.temperature
+                    }))
+                });
+            }
             const cache = get().telemetryCache;
             cache.set(deviceId, data);
             set({ telemetryCache: new Map(cache), isLoadingTelemetry: false });
